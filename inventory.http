@@ -1,0 +1,114 @@
+###
+
+GET http://localhost:5123/items/
+
+###
+
+GET http://localhost:5123/items/5
+
+###
+
+POST http://localhost:5123/items/
+Content-Type: application/json
+
+{
+  "name": "Item 4",
+  "sku": "SKU004",
+  "description": "Description for Item 4"
+}
+
+###
+
+PUT http://localhost:5123/items/1
+Content-Type: application/json
+
+{
+  "name": "Updated Item 1",
+  "sku": "SKU001-UPDATED",
+  "description": "Updated description for Item 1"
+}
+
+###
+
+DELETE http://localhost:5123/items/4
+
+
+
+
+
+###
+
+GET http://localhost:5123/locations
+###
+
+GET http://localhost:5123/locations/1
+
+###
+
+POST http://localhost:5123/locations
+Content-Type: application/json
+
+{
+  "name": "Location 3",
+  "code": "LOC001"
+}
+
+###
+
+PUT http://localhost:5123/locations/1
+Content-Type: application/json
+
+{
+  "name": "Updated Location 1",
+  "code": "LOC001-UPDATED"
+}
+
+###
+
+DELETE http://localhost:5123/locations/4
+
+
+
+
+
+
+###
+
+GET http://localhost:5123/stocklevels
+
+###
+
+GET http://localhost:5123/stocklevels/item/1
+###
+
+GET http://localhost:5123/stocklevels/location/2
+
+###
+
+POST http://localhost:5123/stocklevels
+Content-Type: application/json
+
+{
+  "itemId": 3,
+  "locationId": 3,
+  "quantity": 100
+}
+
+###
+
+PUT http://localhost:5123/stocklevels/2
+Content-Type: application/json
+
+{
+  "itemId": 2,
+  "locationId": 2,
+  "quantity": 150
+}
+
+###
+
+DELETE http://localhost:5123/stocklevels/1
+
+###
+
+
