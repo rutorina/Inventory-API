@@ -15,7 +15,7 @@ public static class DataExtensions
 
     public static void AddInventoryDb(this WebApplicationBuilder builder)
     {
-        var connString = builder.Configuration.GetConnectionString("Inverntory");
+        var connString = builder.Configuration.GetConnectionString("Inventory");
         builder.Services.AddScoped<InventoryContext>();
         builder.Services.AddSqlite<InventoryContext>(
             connString,

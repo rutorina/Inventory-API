@@ -10,7 +10,7 @@ public static class LocationsEndpoints
 
     public static void MapLocationsEndpoints(this WebApplication app)
     {
-        var group = app.MapGroup("/locations");
+        var group = app.MapGroup("/api/locations");
 
         // Locations get
 
@@ -54,7 +54,7 @@ public static class LocationsEndpoints
                 db.Locations.Add(location);
                 await db.SaveChangesAsync();
 
-                return Results.CreatedAtRoute(GetLocationEndpointName, new { id = location.Id }, location);
+                return Results.CreatedAtRoute(GetLocationEndpointName, new { id = location.Id }, new LocationDto(location.Id, location.Name, location.Code));
             }
         );
 
@@ -85,14 +85,7 @@ public static class LocationsEndpoints
             "/{id}",
             async (int id, InventoryContext db) =>
             {
-                var location = await db.Locations.FindAsync(id);
-                if (location is null)
-                {
-                    return Results.NotFound();
-                }
-
-                db.Locations.Remove(location);
-                await db.SaveChangesAsync();
+                await db.Locations.Where(l => l.Id == id).ExecuteDeleteAsync();
                 return Results.NoContent();
             }
         );

@@ -1,5 +1,26 @@
 .git-empty-unused/
+
+# Local SQLite database and its journal/WAL sidecar files
 *.db
+*.db-shm
+*.db-wal
+*.db-journal
+
+# IDE and editor files
+.vs/
+.idea/
+*.user
+*.suo
+*.rsuser
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# OS files
+.DS_Store
+Thumbs.db
 
 ## A streamlined .gitignore for modern .NET projects
 ## including temporary files, build results, and

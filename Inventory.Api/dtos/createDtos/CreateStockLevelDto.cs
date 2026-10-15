@@ -5,5 +5,5 @@ namespace Inventory.Api.Models;
 public record CreateStockLevelDto(
     [Required] int ItemId,
     [Required] int LocationId,
-    [Required] int Quantity
+    [Required] [Range(0, int.MaxValue)] int Quantity
 );

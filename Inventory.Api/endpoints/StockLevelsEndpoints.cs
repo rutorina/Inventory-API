@@ -10,7 +10,7 @@ public static class StockLevelsEndpoints
 
     public static void MapStockLevelsEndpoints(this WebApplication app)
     {
-        var group = app.MapGroup("/stocklevels");
+        var group = app.MapGroup("/api/stocklevels");
         // StockLevels get
 
         group.MapGet(
@@ -67,7 +67,7 @@ public static class StockLevelsEndpoints
                         sl.Quantity
                     ))
                     .ToListAsync();
-                return result.Any() ? Results.Ok(result) : Results.NotFound();
+                return result.Any() ? Results.Ok(result) : Results.Ok(Array.Empty<StockLevelSummaryDto>());
             }
         );
 
@@ -88,7 +88,7 @@ public static class StockLevelsEndpoints
                         sl.Quantity
                     ))
                     .ToListAsync();
-                return result.Any() ? Results.Ok(result) : Results.NotFound();
+                return result.Any() ? Results.Ok(result) : Results.Ok(Array.Empty<StockLevelSummaryDto>());
             }
         );
 
@@ -96,8 +96,17 @@ public static class StockLevelsEndpoints
 
         group.MapPost(
             "/",
-            async (StockLevel newStockLevel, InventoryContext dbContext) =>
+            async (CreateStockLevelDto newStockLevel, InventoryContext dbContext) =>
             {
+                if (!await dbContext.Items.AnyAsync(i => i.Id == newStockLevel.ItemId))
+                {
+                    return Results.BadRequest($"Item {newStockLevel.ItemId} does not exist.");
+                }
+                if (!await dbContext.Locations.AnyAsync(l => l.Id == newStockLevel.LocationId))
+                {
+                    return Results.BadRequest($"Location {newStockLevel.LocationId} does not exist.");
+                }
+
                 StockLevel stockLevel = new StockLevel
                 {
                     ItemId = newStockLevel.ItemId,
@@ -107,15 +116,10 @@ public static class StockLevelsEndpoints
                 dbContext.StockLevels.Add(stockLevel);
                 await dbContext.SaveChangesAsync();
 
-                StockLevelDto stockLevelDetail = new StockLevelDto(
-                    stockLevel.ItemId,
-                    stockLevel.LocationId,
-                    stockLevel.Quantity
-                );
                 return Results.CreatedAtRoute(
-                    "GetStockLevel",
+                    GetStockLevelEndpointName,
                     new { id = stockLevel.Id },
-                    stockLevelDetail
+                    new StockLevelDto(stockLevel.Id, stockLevel.ItemId, stockLevel.LocationId, stockLevel.Quantity)
                 );
             }
         );
@@ -124,13 +128,22 @@ public static class StockLevelsEndpoints
 
         group.MapPut(
             "/{id}",
-            async (int id, StockLevel updatedStockLevel, InventoryContext dbContext) =>
+            async (int id, CreateStockLevelDto updatedStockLevel, InventoryContext dbContext) =>
             {
                 var stockLevel = await dbContext.StockLevels.FirstOrDefaultAsync(sl => sl.Id == id);
                 if (stockLevel is null)
                 {
                     return Results.NotFound();
                 }
+                if (!await dbContext.Items.AnyAsync(i => i.Id == updatedStockLevel.ItemId))
+                {
+                    return Results.BadRequest($"Item {updatedStockLevel.ItemId} does not exist.");
+                }
+                if (!await dbContext.Locations.AnyAsync(l => l.Id == updatedStockLevel.LocationId))
+                {
+                    return Results.BadRequest($"Location {updatedStockLevel.LocationId} does not exist.");
+                }
+                
                 stockLevel.ItemId = updatedStockLevel.ItemId;
                 stockLevel.LocationId = updatedStockLevel.LocationId;
                 stockLevel.Quantity = updatedStockLevel.Quantity;
@@ -146,14 +159,7 @@ public static class StockLevelsEndpoints
             "/{id}",
             async (int id, InventoryContext dbContext) =>
             {
-                var stockLevel = await dbContext.StockLevels.FirstOrDefaultAsync(sl => sl.Id == id);
-                if (stockLevel is null)
-                {
-                    return Results.NotFound();
-                }
-
-                dbContext.StockLevels.Remove(stockLevel);
-                await dbContext.SaveChangesAsync();
+                await dbContext.StockLevels.Where(sl => sl.Id == id).ExecuteDeleteAsync();
                 return Results.NoContent();
             }
         );

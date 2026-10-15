@@ -10,7 +10,7 @@ public static class ItemsEndpoints
 
     public static void MapItemsEndpoints(this WebApplication app)
     {
-        var group = app.MapGroup("/items");
+        var group = app.MapGroup("/api/items");
 
         // Items get
 
@@ -56,7 +56,7 @@ public static class ItemsEndpoints
                 dbContext.Items.Add(item);
                 await dbContext.SaveChangesAsync();
 
-                return Results.CreatedAtRoute(GetItemEndpointName, new { id = item.Id }, item);
+                return Results.CreatedAtRoute(GetItemEndpointName, new { id = item.Id }, new ItemDto(item.Id, item.Name, item.Sku, item.Description));
             }
         );
 
