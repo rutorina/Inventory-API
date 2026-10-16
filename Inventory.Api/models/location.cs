@@ -1,5 +1,4 @@
 namespace Inventory.Api.Models;
-
 public class Location
 {
     public int Id { get; set; }

@@ -15,9 +15,9 @@ public static class DataExtensions
 
     public static void AddInventoryDb(this WebApplicationBuilder builder)
     {
-        var connString = builder.Configuration.GetConnectionString("Inventory");
+        var connString = builder.Configuration.GetConnectionString("DbConnection");
         builder.Services.AddScoped<InventoryContext>();
-        builder.Services.AddSqlite<InventoryContext>(
+        builder.Services.AddNpgsql<InventoryContext>(
             connString,
             optionsAction: options =>
                 options.UseSeeding(
@@ -30,21 +30,21 @@ public static class DataExtensions
                                 .AddRange(
                                     new Item
                                     {
-                                        Id = 1,
+                                        // Id = 1,
                                         Name = "Item 1",
                                         Sku = "SKU001",
                                         Description = "Description for Item 1",
                                     },
                                     new Item
                                     {
-                                        Id = 2,
+                                        // Id = 2,
                                         Name = "Item 2",
                                         Sku = "SKU002",
                                         Description = "Description for Item 2",
                                     },
                                     new Item
                                     {
-                                        Id = 3,
+                                        // Id = 3,
                                         Name = "Item 3",
                                         Sku = "SKU003",
                                         Description = "Description for Item 3",

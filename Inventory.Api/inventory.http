@@ -1,14 +1,14 @@
 ###
 
-GET http://localhost:5123/items/
+GET http://localhost:5123/api/items/
 
 ###
 
-GET http://localhost:5123/items/5
+GET http://localhost:5123/api/items/5
 
 ###
 
-POST http://localhost:5123/items/
+POST http://localhost:5123/api/items/
 Content-Type: application/json
 
 {
@@ -19,7 +19,7 @@ Content-Type: application/json
 
 ###
 
-PUT http://localhost:5123/items/1
+PUT http://localhost:5123/api/items/1
 Content-Type: application/json
 
 {
@@ -30,7 +30,7 @@ Content-Type: application/json
 
 ###
 
-DELETE http://localhost:5123/items/4
+DELETE http://localhost:5123/api/items/4
 
 
 
@@ -38,14 +38,14 @@ DELETE http://localhost:5123/items/4
 
 ###
 
-GET http://localhost:5123/locations
+GET http://localhost:5123/api/locations
 ###
 
-GET http://localhost:5123/locations/1
+GET http://localhost:5123/api/locations/1
 
 ###
 
-POST http://localhost:5123/locations
+POST http://localhost:5123/api/locations
 Content-Type: application/json
 
 {
@@ -55,7 +55,7 @@ Content-Type: application/json
 
 ###
 
-PUT http://localhost:5123/locations/1
+PUT http://localhost:5123/api/locations/1
 Content-Type: application/json
 
 {
@@ -65,7 +65,7 @@ Content-Type: application/json
 
 ###
 
-DELETE http://localhost:5123/locations/4
+DELETE http://localhost:5123/api/locations/4
 
 
 
@@ -74,18 +74,18 @@ DELETE http://localhost:5123/locations/4
 
 ###
 
-GET http://localhost:5123/stocklevels
+GET http://localhost:5123/api/stocklevels
 
 ###
 
-GET http://localhost:5123/stocklevels/item/1
+GET http://localhost:5123/api/stocklevels/item/1
 ###
 
-GET http://localhost:5123/stocklevels/location/2
+GET http://localhost:5123/api/stocklevels/location/2
 
 ###
 
-POST http://localhost:5123/stocklevels
+POST http://localhost:5123/api/stocklevels
 Content-Type: application/json
 
 {
@@ -96,7 +96,7 @@ Content-Type: application/json
 
 ###
 
-PUT http://localhost:5123/stocklevels/2
+PUT http://localhost:5123/api/stocklevels/2
 Content-Type: application/json
 
 {
@@ -107,7 +107,7 @@ Content-Type: application/json
 
 ###
 
-DELETE http://localhost:5123/stocklevels/1
+DELETE http://localhost:5123/api/stocklevels/1
 
 ###
 

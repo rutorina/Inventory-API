@@ -1,5 +1,8 @@
 using Inventory.Api.Endpoints;
 
+// Load .env into environment variables before configuration is built
+DotNetEnv.Env.TraversePath().Load();
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddCors(options =>
@@ -10,6 +13,7 @@ builder.Services.AddCors(options =>
 builder.Services.AddOpenApi();
 
 builder.Services.AddValidation();
+
 builder.AddInventoryDb();
 
 var app = builder.Build();
