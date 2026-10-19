@@ -1,5 +1,8 @@
+using Microsoft.EntityFrameworkCore;
+
 namespace Inventory.Api.Models;
 
+[Index(nameof(Sku), IsUnique = true)]
 public class Item
 {
     public int Id { get; set; }

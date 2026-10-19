@@ -31,24 +31,28 @@ public static class StockLevelsEndpoints
 
         // StockLevels get by id
 
-        group.MapGet(
-            "/{id}",
-            async (int id, InventoryContext dbContext) =>
-            {
-                var stockLevel = await dbContext
-                    .StockLevels.Include(sl => sl.Item)
-                    .Include(sl => sl.Location)
-                    .FirstOrDefaultAsync(sl => sl.Id == id);
-                return stockLevel is not null
-                    ? Results.Ok(new StockLevelSummaryDto(
-                        stockLevel.Id,
-                        stockLevel.Item.Name,
-                        stockLevel.Location.Name,
-                        stockLevel.Quantity
-                    ))
-                    : Results.NotFound();
-            }
-        ).WithName(GetStockLevelEndpointName);
+        group
+            .MapGet(
+                "/{id}",
+                async (int id, InventoryContext dbContext) =>
+                {
+                    var stockLevel = await dbContext
+                        .StockLevels.Include(sl => sl.Item)
+                        .Include(sl => sl.Location)
+                        .FirstOrDefaultAsync(sl => sl.Id == id);
+                    return stockLevel is not null
+                        ? Results.Ok(
+                            new StockLevelSummaryDto(
+                                stockLevel.Id,
+                                stockLevel.Item.Name,
+                                stockLevel.Location.Name,
+                                stockLevel.Quantity
+                            )
+                        )
+                        : Results.NotFound();
+                }
+            )
+            .WithName(GetStockLevelEndpointName);
 
         // StockLevels get by item id
 
@@ -67,7 +71,9 @@ public static class StockLevelsEndpoints
                         sl.Quantity
                     ))
                     .ToListAsync();
-                return result.Any() ? Results.Ok(result) : Results.Ok(Array.Empty<StockLevelSummaryDto>());
+                return result.Any()
+                    ? Results.Ok(result)
+                    : Results.Ok(Array.Empty<StockLevelSummaryDto>());
             }
         );
 
@@ -88,38 +94,73 @@ public static class StockLevelsEndpoints
                         sl.Quantity
                     ))
                     .ToListAsync();
-                return result.Any() ? Results.Ok(result) : Results.Ok(Array.Empty<StockLevelSummaryDto>());
+                return result.Any()
+                    ? Results.Ok(result)
+                    : Results.Ok(Array.Empty<StockLevelSummaryDto>());
             }
         );
 
         // StockLevels post
 
         group.MapPost(
-            "/",
-            async (CreateStockLevelDto newStockLevel, InventoryContext dbContext) =>
+            "/receive",
+            async (ReceiveStockLevelDto newStockLevel, InventoryContext dbContext) =>
             {
+                if (newStockLevel.Quantity < 0)
+                {
+                    return Results.BadRequest("Quantity cannot be negative.");
+                }
                 if (!await dbContext.Items.AnyAsync(i => i.Id == newStockLevel.ItemId))
                 {
                     return Results.BadRequest($"Item {newStockLevel.ItemId} does not exist.");
                 }
                 if (!await dbContext.Locations.AnyAsync(l => l.Id == newStockLevel.LocationId))
                 {
-                    return Results.BadRequest($"Location {newStockLevel.LocationId} does not exist.");
+                    return Results.BadRequest(
+                        $"Location {newStockLevel.LocationId} does not exist."
+                    );
+                }
+                var matchingStockLevel = dbContext.StockLevels.Where(sl =>
+                    sl.ItemId == newStockLevel.ItemId && sl.LocationId == newStockLevel.LocationId
+                );
+
+                Task<int> AddToExistingAsync() =>
+                    matchingStockLevel.ExecuteUpdateAsync(s =>
+                        s.SetProperty(sl => sl.Quantity, sl => sl.Quantity + newStockLevel.Quantity)
+                    );
+
+                if (await AddToExistingAsync() == 0)
+                {
+                    dbContext.StockLevels.Add(
+                        new StockLevel
+                        {
+                            ItemId = newStockLevel.ItemId,
+                            LocationId = newStockLevel.LocationId,
+                            Quantity = newStockLevel.Quantity,
+                        }
+                    );
+                    try
+                    {
+                        await dbContext.SaveChangesAsync();
+                    }
+                    catch (DbUpdateException)
+                    {
+                        dbContext.ChangeTracker.Clear();
+                        await AddToExistingAsync();
+                    }
                 }
 
-                StockLevel stockLevel = new StockLevel
-                {
-                    ItemId = newStockLevel.ItemId,
-                    LocationId = newStockLevel.LocationId,
-                    Quantity = newStockLevel.Quantity,
-                };
-                dbContext.StockLevels.Add(stockLevel);
-                await dbContext.SaveChangesAsync();
+                var stockLevel = await matchingStockLevel.AsNoTracking().FirstAsync();
 
                 return Results.CreatedAtRoute(
                     GetStockLevelEndpointName,
                     new { id = stockLevel.Id },
-                    new StockLevelDto(stockLevel.Id, stockLevel.ItemId, stockLevel.LocationId, stockLevel.Quantity)
+                    new StockLevelDto(
+                        stockLevel.Id,
+                        stockLevel.ItemId,
+                        stockLevel.LocationId,
+                        stockLevel.Quantity
+                    )
                 );
             }
         );
@@ -128,8 +169,12 @@ public static class StockLevelsEndpoints
 
         group.MapPut(
             "/{id}",
-            async (int id, CreateStockLevelDto updatedStockLevel, InventoryContext dbContext) =>
+            async (int id, ReceiveStockLevelDto updatedStockLevel, InventoryContext dbContext) =>
             {
+                if (updatedStockLevel.Quantity < 0)
+                {
+                    return Results.BadRequest("Quantity must not be negative.");
+                }
                 var stockLevel = await dbContext.StockLevels.FirstOrDefaultAsync(sl => sl.Id == id);
                 if (stockLevel is null)
                 {
@@ -141,15 +186,90 @@ public static class StockLevelsEndpoints
                 }
                 if (!await dbContext.Locations.AnyAsync(l => l.Id == updatedStockLevel.LocationId))
                 {
-                    return Results.BadRequest($"Location {updatedStockLevel.LocationId} does not exist.");
+                    return Results.BadRequest(
+                        $"Location {updatedStockLevel.LocationId} does not exist."
+                    );
                 }
-                
+
                 stockLevel.ItemId = updatedStockLevel.ItemId;
                 stockLevel.LocationId = updatedStockLevel.LocationId;
                 stockLevel.Quantity = updatedStockLevel.Quantity;
-                await dbContext.SaveChangesAsync();
+                try
+                {
+                    await dbContext.SaveChangesAsync();
+                }
+                catch (DbUpdateException)
+                {
+                    return Results.Conflict("Stock changed during update, please retry.");
+                }
 
                 return Results.NoContent();
+            }
+        );
+        // StockLevels transfer
+
+        group.MapPost(
+            "/transfer",
+            async (TransferStockLevelDto transferStockLevel, InventoryContext dbContext) =>
+            {
+                if (transferStockLevel.Quantity <= 0)
+                {
+                    return Results.BadRequest("Quantity must be greater than zero.");
+                }
+                if (transferStockLevel.FromLocationId == transferStockLevel.ToLocationId)
+                {
+                    return Results.BadRequest(
+                        "Source and destination locations must be different."
+                    );
+                }
+
+                var fromStockLevel = await dbContext.StockLevels.FirstOrDefaultAsync(sl =>
+                    sl.ItemId == transferStockLevel.ItemId
+                    && sl.LocationId == transferStockLevel.FromLocationId
+                );
+                if (fromStockLevel is null)
+                {
+                    return Results.BadRequest("Source location does not have the specified item.");
+                }
+
+                if (!await dbContext.Locations.AnyAsync(l => l.Id == transferStockLevel.ToLocationId))
+                {
+                    return Results.BadRequest("Destination location does not exist.");
+                }
+
+                var toStockLevel = await dbContext.StockLevels.FirstOrDefaultAsync(sl =>
+                    sl.ItemId == transferStockLevel.ItemId
+                    && sl.LocationId == transferStockLevel.ToLocationId
+                );
+
+                if (fromStockLevel.Quantity < transferStockLevel.Quantity)
+                {
+                    return Results.BadRequest("Insufficient stock at the source location.");
+                }
+
+                if (toStockLevel is null)
+                {
+                    toStockLevel = new StockLevel
+                    {
+                        ItemId = transferStockLevel.ItemId,
+                        LocationId = transferStockLevel.ToLocationId,
+                        Quantity = 0,
+                    };
+                    dbContext.StockLevels.Add(toStockLevel);
+                }
+
+                fromStockLevel.Quantity -= transferStockLevel.Quantity;
+                toStockLevel.Quantity += transferStockLevel.Quantity;
+                try
+                {
+                    await dbContext.SaveChangesAsync();
+                }
+                catch (DbUpdateException)
+                {
+                    return Results.Conflict("Stock changed during transfer, please retry.");
+                }
+
+                return Results.Ok();
             }
         );
 

@@ -43,6 +43,9 @@ namespace Inventory.Api.DataMigrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Sku")
+                        .IsUnique();
+
                     b.ToTable("Items");
                 });
 
@@ -64,6 +67,9 @@ namespace Inventory.Api.DataMigrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Code")
+                        .IsUnique();
+
                     b.ToTable("Locations");
                 });
 
@@ -84,11 +90,18 @@ namespace Inventory.Api.DataMigrations
                     b.Property<int>("Quantity")
                         .HasColumnType("integer");
 
+                    b.Property<uint>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("ItemId");
-
                     b.HasIndex("LocationId");
+
+                    b.HasIndex("ItemId", "LocationId")
+                        .IsUnique();
 
                     b.ToTable("StockLevels");
                 });

@@ -52,7 +52,14 @@ public static class LocationsEndpoints
                     Code = newLocation.Code,
                 };
                 db.Locations.Add(location);
-                await db.SaveChangesAsync();
+                try
+                {
+                    await db.SaveChangesAsync();
+                }
+                catch (DbUpdateException)
+                {
+                    return Results.Conflict($"A location with code '{newLocation.Code}' already exists.");
+                }
 
                 return Results.CreatedAtRoute(GetLocationEndpointName, new { id = location.Id }, new LocationDto(location.Id, location.Name, location.Code));
             }
@@ -73,7 +80,14 @@ public static class LocationsEndpoints
                 location.Name = updatedLocation.Name;
                 location.Code = updatedLocation.Code;
 
-                await db.SaveChangesAsync();
+                try
+                {
+                    await db.SaveChangesAsync();
+                }
+                catch (DbUpdateException)
+                {
+                    return Results.Conflict($"A location with code '{updatedLocation.Code}' already exists.");
+                }
 
                 return Results.NoContent();
             }

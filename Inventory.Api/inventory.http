@@ -85,13 +85,25 @@ GET http://localhost:5123/api/stocklevels/location/2
 
 ###
 
-POST http://localhost:5123/api/stocklevels
+POST http://localhost:5123/api/stocklevels/receive
 Content-Type: application/json
 
 {
   "itemId": 3,
-  "locationId": 3,
+  "locationId": 6,
   "quantity": 100
+}
+
+###
+
+POST http://localhost:5123/api/stocklevels/transfer
+Content-Type: application/json
+
+{
+  "itemId": 3,
+  "fromLocationId": 3,
+  "toLocationId": 2,
+  "quantity": 50
 }
 
 ###

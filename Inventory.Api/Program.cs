@@ -1,3 +1,4 @@
+using Inventory.Api.Data;
 using Inventory.Api.Endpoints;
 
 // Load .env into environment variables before configuration is built

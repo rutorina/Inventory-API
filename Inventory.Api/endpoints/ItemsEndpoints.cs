@@ -54,7 +54,14 @@ public static class ItemsEndpoints
                     Description = newItem.Description ?? string.Empty,
                 };
                 dbContext.Items.Add(item);
-                await dbContext.SaveChangesAsync();
+                try
+                {
+                    await dbContext.SaveChangesAsync();
+                }
+                catch (DbUpdateException)
+                {
+                    return Results.Conflict($"An item with SKU '{newItem.Sku}' already exists.");
+                }
 
                 return Results.CreatedAtRoute(GetItemEndpointName, new { id = item.Id }, new ItemDto(item.Id, item.Name, item.Sku, item.Description));
             }
@@ -76,7 +83,14 @@ public static class ItemsEndpoints
                 item.Sku = updatedItem.Sku;
                 item.Description = updatedItem.Description ?? string.Empty;
 
-                await dbContext.SaveChangesAsync();
+                try
+                {
+                    await dbContext.SaveChangesAsync();
+                }
+                catch (DbUpdateException)
+                {
+                    return Results.Conflict($"An item with SKU '{updatedItem.Sku}' already exists.");
+                }
 
                 return Results.NoContent();
             }
