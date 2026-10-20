@@ -112,8 +112,6 @@ PUT http://localhost:5123/api/stocklevels/2
 Content-Type: application/json
 
 {
-  "itemId": 2,
-  "locationId": 2,
   "quantity": 150
 }
 

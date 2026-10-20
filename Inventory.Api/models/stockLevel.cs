@@ -10,9 +10,13 @@ public class StockLevel
     public int Id { get; set; }
 
     public int ItemId { get; set; }
+
+    [DeleteBehavior(DeleteBehavior.Restrict)]
     public Item? Item { get; set; }
 
     public int LocationId { get; set; }
+
+    [DeleteBehavior(DeleteBehavior.Restrict)]
     public Location? Location { get; set; }
 
     public required int Quantity { get; set; }

@@ -1,6 +1,7 @@
 using Inventory.Api.Data;
 using Inventory.Api.Models;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 
 namespace Inventory.Api.Endpoints;
 
@@ -102,9 +103,20 @@ public static class ItemsEndpoints
             "/{id}",
             async (int id, InventoryContext dbContext) =>
             {
-                await dbContext.Items.Where(i => i.Id == id).ExecuteDeleteAsync();
-
-                return Results.NoContent();
+                const string inUse = "Cannot delete item as it is associated with stock levels.";
+                if (await dbContext.StockLevels.AnyAsync(sl => sl.ItemId == id))
+                {
+                    return Results.Conflict(inUse);
+                }
+                try
+                {
+                    var deleted = await dbContext.Items.Where(i => i.Id == id).ExecuteDeleteAsync();
+                    return deleted > 0 ? Results.NoContent() : Results.NotFound();
+                }
+                catch (PostgresException ex) when (ex.SqlState == PostgresErrorCodes.ForeignKeyViolation)
+                {
+                    return Results.Conflict(inUse);
+                }
             }
         );
     }
