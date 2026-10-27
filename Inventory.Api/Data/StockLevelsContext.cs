@@ -9,7 +9,6 @@ public class InventoryContext(DbContextOptions<InventoryContext> options) : DbCo
     public DbSet<Location> Locations => Set<Location>();
     public DbSet<StockLevel> StockLevels => Set<StockLevel>();
 
-    // Override the (bool, CancellationToken) overload; the other async overload forwards to it
     public override Task<int> SaveChangesAsync(
         bool acceptAllChangesOnSuccess,
         CancellationToken cancellationToken = default
