@@ -1,7 +1,14 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import "./App.css";
 import ItemLine from "./item-components/itemLine.jsx";
+import DetailField from "./item-components/DetailField.jsx";
+import Modal from "./item-components/Modal.jsx";
+
 import { useParams } from "react-router";
+import editIcon from "./assets/edit.png";
+import deleteIcon from "./assets/delete.png";
+import checkIcon from "./assets/check.png";
+import cancelIcon from "./assets/cancel.png";
 
 function ItemDetails() {
   const [item, setItem] = useState({
@@ -10,31 +17,163 @@ function ItemDetails() {
     sku: "",
     description: "",
   });
-  const params = new URLSearchParams(window.location.search);
+  const [originalItem, setOriginalItem] = useState({
+    id: "",
+    name: "",
+    sku: "",
+    description: "",
+  });
+  const [isEditing, setIsEditing] = useState(false);
+  // const params = new URLSearchParams(window.location.search);
   const { id } = useParams();
+
+  const [open, setOpen] = useState(false);
+  const [confirm, setConfirm] = useState(false);
 
   useEffect(() => {
     fetch(`${import.meta.env.VITE_API_URL}/api/items/${id}`)
       .then((response) => response.json())
-      .then((data) => setItem(data))
+      .then((data) => {
+        setItem(data);
+        setOriginalItem(data);
+      })
       .catch((error) => console.error("Error fetching item details:", error));
     // You can fetch item details from an API here if needed
   }, []);
 
+  useEffect(() => {
+    setIsEditing(false);
+    if (confirm) {
+      fetch(`${import.meta.env.VITE_API_URL}/api/items/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(item),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          setItem(data);
+          setOriginalItem(data);
+          setIsEditing(false);
+          setConfirm(false);
+        })
+        .catch((error) => console.error("Error saving item details:", error));
+    }
+    // setOpen(false);
+  }, [confirm]);
+
+  function handleEditClick() {
+    setIsEditing(!isEditing);
+  }
+
+  function handleSaveClick() {
+    if (item.name == "" || item.sku == "" || item.description == "") {
+      return;
+    }
+    if (
+      item.name === originalItem.name &&
+      item.sku === originalItem.sku &&
+      item.description === originalItem.description
+    ) {
+      setIsEditing(false);
+      return;
+    }
+
+    setOpen(true);
+  }
+
+  function handleCancelClick() {
+    setItem(originalItem);
+    setIsEditing(false);
+  }
+
   return (
     <>
-      <h1>Item Details</h1>
-      <div className="item-detail">
-        <h3>Name</h3>
-        <p>{item.name}</p>
+      <Modal open={open} onClose={() => setOpen(false)}>
+        <h2 className="text-3xl! font-bold! mb-4! text-white!">Confirmation</h2>
+        <p className="text-center">Are you sure you want to apply changes?</p>
+        <div className="mt-6! flex justify-around gap-4">
+          <button
+            className="px-4! py-2! font-semibold rounded-lg text-white bg-green-600! hover:bg-green-700! shadow-lg shadow-green-400/40"
+            onClick={() => {
+              setOpen(false);
+              setConfirm(true);
+            }}
+          >
+            Confirm
+          </button>
+          <button
+            className="px-4! py-2! font-semibold rounded-lg text-white bg-gray-500! hover:bg-gray-600! shadow-lg"
+            onClick={() => setOpen(false)}
+          >
+            Cancel
+          </button>
+        </div>
+      </Modal>
+
+      <div className="item-detail-header">
+        <h1>{isEditing ? "Edit Item" : "Item Details"}</h1>
       </div>
       <div className="item-detail">
-        <h3>SKU</h3>
-        <p>{item.sku}</p>
+        <DetailField
+          label="Name"
+          value={item.name}
+          isEditing={isEditing}
+          setter={(val) => setItem({ ...item, name: val })}
+        />
       </div>
       <div className="item-detail">
-        <h3>Description</h3>
-        <p>{item.description}</p>
+        <DetailField
+          label="SKU"
+          value={item.sku}
+          isEditing={isEditing}
+          setter={(val) => setItem({ ...item, sku: val })}
+        />
+      </div>
+      <div className="item-detail">
+        <DetailField
+          label="Description"
+          value={item.description}
+          isEditing={isEditing}
+          setter={(val) => setItem({ ...item, description: val })}
+        />
+      </div>
+      <div className="item-detail-actions">
+        {isEditing ? (
+          <div className="item-detail-action" onClick={handleSaveClick}>
+            <img
+              className="item-detail-action-icon"
+              src={checkIcon}
+              alt="Save"
+            />
+          </div>
+        ) : (
+          <div className="item-detail-action" onClick={handleEditClick}>
+            <img
+              className="item-detail-action-icon"
+              src={editIcon}
+              alt="Edit"
+            />
+          </div>
+        )}
+        {isEditing ? (
+          <div className="item-detail-action" onClick={handleCancelClick}>
+            <img
+              className="item-detail-action-icon"
+              src={cancelIcon}
+              alt="Cancel"
+            />
+          </div>
+        ) : (
+          <div className="item-detail-action">
+            <img
+              className="item-detail-action-icon"
+              src={deleteIcon}
+              alt="Delete"
+            />
+          </div>
+        )}
       </div>
     </>
   );
