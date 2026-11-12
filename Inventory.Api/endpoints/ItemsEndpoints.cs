@@ -93,7 +93,7 @@ public static class ItemsEndpoints
                     return Results.Conflict($"An item with SKU '{updatedItem.Sku}' already exists.");
                 }
 
-                return Results.NoContent();
+                return Results.Ok(new ItemDto(item.Id, item.Name, item.Sku, item.Description));
             }
         );
 
@@ -111,7 +111,7 @@ public static class ItemsEndpoints
                 try
                 {
                     var deleted = await dbContext.Items.Where(i => i.Id == id).ExecuteDeleteAsync();
-                    return deleted > 0 ? Results.NoContent() : Results.NotFound();
+                    return deleted > 0 ? Results.NoContent() : Results.NotFound("Item not found.");
                 }
                 catch (PostgresException ex) when (ex.SqlState == PostgresErrorCodes.ForeignKeyViolation)
                 {

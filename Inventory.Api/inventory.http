@@ -10,7 +10,6 @@ GET http://localhost:5123/api/items/5
 
 POST http://localhost:5123/api/items/
 Content-Type: application/json
-
 {
   "name": "Item 4",
   "sku": "SKU004",
@@ -19,13 +18,13 @@ Content-Type: application/json
 
 ###
 
-PUT http://localhost:5123/api/items/1
+PUT http://localhost:5123/api/items/3
 Content-Type: application/json
 
 {
-  "name": "Updated Item 1",
-  "sku": "SKU001-UPDATED",
-  "description": "Updated description for Item 1"
+  "name": "Updated Item 3",
+  "sku": "SKU003-UPDATED",
+  "description": "Updated description for Item 3"
 }
 
 ###
@@ -118,7 +117,3 @@ Content-Type: application/json
 ###
 
 DELETE http://localhost:5123/api/stocklevels/1
-
-###
-
-

@@ -8,7 +8,7 @@ export default function Modal({ open, onClose, children }) {
     >
       {/* Modal */}
       <div
-        className={`relative w-full max-w-md mx-4! bg-gray-700 text-gray-100 rounded-xl shadow-xl p-6! transition-all ${open ? "scale-100 opacity-100" : "scale-125 opacity-0"}`}
+        className={`relative w-full max-w-md mx-4! bg-gray-700 text-gray-100 rounded-xl shadow-xl p-6! transition-[scale,opacity] ${open ? "scale-100 opacity-100" : "scale-125 opacity-0"}`}
         onClick={(e) => e.stopPropagation()}
       >
         <button

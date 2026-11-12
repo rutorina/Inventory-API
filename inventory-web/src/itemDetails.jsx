@@ -1,10 +1,12 @@
+import toast, { Toaster } from "react-hot-toast";
 import { useState, useEffect, useRef } from "react";
+
 import "./App.css";
 import ItemLine from "./item-components/itemLine.jsx";
 import DetailField from "./item-components/DetailField.jsx";
 import Modal from "./item-components/Modal.jsx";
 
-import { useParams } from "react-router";
+import { useParams, useNavigate } from "react-router";
 import editIcon from "./assets/edit.png";
 import deleteIcon from "./assets/delete.png";
 import checkIcon from "./assets/check.png";
@@ -24,11 +26,15 @@ function ItemDetails() {
     description: "",
   });
   const [isEditing, setIsEditing] = useState(false);
-  // const params = new URLSearchParams(window.location.search);
   const { id } = useParams();
 
   const [open, setOpen] = useState(false);
   const [confirm, setConfirm] = useState(false);
+  const confirmButtonRef = useRef(null);
+
+  const navigate = useNavigate();
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const deleteCancelButtonRef = useRef(null);
 
   useEffect(() => {
     fetch(`${import.meta.env.VITE_API_URL}/api/items/${id}`)
@@ -37,9 +43,20 @@ function ItemDetails() {
         setItem(data);
         setOriginalItem(data);
       })
-      .catch((error) => console.error("Error fetching item details:", error));
-    // You can fetch item details from an API here if needed
+      .catch(() => toast.error("Error fetching item details, please try again."));
   }, []);
+
+  useEffect(() => {
+    if (open) {
+      confirmButtonRef.current?.focus();
+    }
+  }, [open]);
+
+  useEffect(() => {
+    if (deleteOpen) {
+      deleteCancelButtonRef.current?.focus();
+    }
+  }, [deleteOpen]);
 
   useEffect(() => {
     setIsEditing(false);
@@ -57,10 +74,10 @@ function ItemDetails() {
           setOriginalItem(data);
           setIsEditing(false);
           setConfirm(false);
+          toast.success("Item details updated successfully!");
         })
-        .catch((error) => console.error("Error saving item details:", error));
+        .catch(() => toast.error("Error updating item details, please try again."));
     }
-    // setOpen(false);
   }, [confirm]);
 
   function handleEditClick() {
@@ -69,6 +86,7 @@ function ItemDetails() {
 
   function handleSaveClick() {
     if (item.name == "" || item.sku == "" || item.description == "") {
+      toast("Please fill in all fields before saving.");
       return;
     }
     if (
@@ -88,6 +106,41 @@ function ItemDetails() {
     setIsEditing(false);
   }
 
+  function handleDeleteClick() {
+    setDeleteOpen(true);
+  }
+
+  function handleDeleteConfirm() {
+    setDeleteOpen(false);
+    fetch(`${import.meta.env.VITE_API_URL}/api/items/${id}`, {
+      method: "DELETE",
+    })
+      .then((response) => {
+        if (!response.ok) {
+          // 409 sends a reason in the body; 404 and others send nothing
+          return response
+            .json()
+            .catch(() => null)
+            .then((message) => {
+              throw new Error(
+                message ?? `Delete failed (status ${response.status}).`,
+              );
+            });
+        }
+        toast.success("Item deleted.");
+        navigate("/items");
+      })
+      .catch((error) => {
+        console.error("Error deleting item:", error);
+        // fetch throws a TypeError only when the server can't be reached
+        toast.error(
+          error instanceof TypeError
+            ? "Could not reach the server."
+            : error.message,
+        );
+      });
+  }
+
   return (
     <>
       <Modal open={open} onClose={() => setOpen(false)}>
@@ -95,6 +148,7 @@ function ItemDetails() {
         <p className="text-center">Are you sure you want to apply changes?</p>
         <div className="mt-6! flex justify-around gap-4">
           <button
+            ref={confirmButtonRef}
             className="px-4! py-2! font-semibold rounded-lg text-white bg-green-600! hover:bg-green-700! shadow-lg shadow-green-400/40"
             onClick={() => {
               setOpen(false);
@@ -106,6 +160,29 @@ function ItemDetails() {
           <button
             className="px-4! py-2! font-semibold rounded-lg text-white bg-gray-500! hover:bg-gray-600! shadow-lg"
             onClick={() => setOpen(false)}
+          >
+            Cancel
+          </button>
+        </div>
+      </Modal>
+
+      <Modal open={deleteOpen} onClose={() => setDeleteOpen(false)}>
+        <h2 className="text-3xl! font-bold! mb-4! text-white!">Delete Item</h2>
+        <p className="text-center">
+          Are you sure you want to delete <strong>{item.name}</strong>? This
+          cannot be undone.
+        </p>
+        <div className="mt-6! flex justify-around gap-4">
+          <button
+            className="px-4! py-2! font-semibold rounded-lg text-white bg-red-600! hover:bg-red-700! shadow-lg shadow-red-400/40"
+            onClick={handleDeleteConfirm}
+          >
+            Delete
+          </button>
+          <button
+            ref={deleteCancelButtonRef}
+            className="px-4! py-2! font-semibold rounded-lg text-white bg-gray-500! hover:bg-gray-600! shadow-lg"
+            onClick={() => setDeleteOpen(false)}
           >
             Cancel
           </button>
@@ -166,7 +243,7 @@ function ItemDetails() {
             />
           </div>
         ) : (
-          <div className="item-detail-action">
+          <div className="item-detail-action" onClick={handleDeleteClick}>
             <img
               className="item-detail-action-icon"
               src={deleteIcon}
@@ -175,6 +252,20 @@ function ItemDetails() {
           </div>
         )}
       </div>
+      <Toaster
+        toastOptions={{
+          className:
+            "px-8 !min-w-sm !bg-yellow-600 !text-white !border !border-slate-700 !rounded-xl !shadow-2xl",
+          success: {
+            className:
+              "px-8 !min-w-sm  !bg-emerald-950 !text-emerald-200 !border-emerald-500",
+          },
+          error: {
+            className:
+              "px-8 !min-w-sm !bg-rose-950 !text-rose-200 !border-rose-500",
+          },
+        }}
+      />
     </>
   );
 }
