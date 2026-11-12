@@ -1,9 +1,10 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import "./index.css";
+import "../index.css";
 import App from "./App.jsx";
 import Items from "./Items.jsx";
 import ItemDetails from "./itemDetails.jsx";
+import Toaster from "../components/Toaster.jsx";
 import { createBrowserRouter, RouterProvider } from "react-router";
 
 const router = createBrowserRouter([
@@ -60,5 +61,6 @@ const router = createBrowserRouter([
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <RouterProvider router={router} />
+    <Toaster />
   </StrictMode>,
 );
