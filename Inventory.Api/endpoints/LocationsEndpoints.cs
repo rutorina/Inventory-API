@@ -49,8 +49,8 @@ public static class LocationsEndpoints
             {
                 var location = new Location
                 {
-                    Name = newLocation.Name,
-                    Code = newLocation.Code,
+                    Name = newLocation.Name.Trim(),
+                    Code = newLocation.Code.Trim(),
                 };
                 db.Locations.Add(location);
                 try
@@ -59,7 +59,7 @@ public static class LocationsEndpoints
                 }
                 catch (DbUpdateException)
                 {
-                    return Results.Conflict($"A location with code '{newLocation.Code}' already exists.");
+                    return Results.Conflict($"A location with code '{location.Code}' already exists.");
                 }
 
                 return Results.CreatedAtRoute(GetLocationEndpointName, new { id = location.Id }, new LocationDto(location.Id, location.Name, location.Code));
@@ -78,8 +78,8 @@ public static class LocationsEndpoints
                     return Results.NotFound();
                 }
 
-                location.Name = updatedLocation.Name;
-                location.Code = updatedLocation.Code;
+                location.Name = updatedLocation.Name.Trim();
+                location.Code = updatedLocation.Code.Trim();
 
                 try
                 {
@@ -87,7 +87,7 @@ public static class LocationsEndpoints
                 }
                 catch (DbUpdateException)
                 {
-                    return Results.Conflict($"A location with code '{updatedLocation.Code}' already exists.");
+                    return Results.Conflict($"A location with code '{location.Code}' already exists.");
                 }
 
                 return Results.NoContent();

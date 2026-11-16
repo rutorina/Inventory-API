@@ -2,12 +2,10 @@ import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import "../App.css";
 import ItemLine from "../item-components/itemLine.jsx";
-import "../components/ActionButton.jsx";
-import addIcon from "../assets/add.png";
+import ActionButton from "../components/ActionButton.jsx";
 import ReturnButton from "../components/ReturnButton.jsx";
 import { getItems, createItem } from "../api/items.js";
-
-import ActionButton from "../components/ActionButton.jsx";
+import addIcon from "../assets/add.png";
 
 function Items() {
   const [data, setData] = useState([]);
@@ -23,7 +21,7 @@ function Items() {
   }, []);
 
   async function handleAddItem(newItem) {
-    if (!newItem.name || !newItem.sku || !newItem.description) {
+    if (!newItem.name.trim() || !newItem.sku.trim() || !newItem.description.trim()) {
       toast.error("Please fill in all fields.");
       return;
     }

@@ -62,7 +62,6 @@ function ItemDetails() {
       setIsEditing(false);
       toast.success("Item details updated successfully!");
     } catch (error) {
-      // Stay in edit mode so the user can fix the problem (e.g. duplicate SKU).
       toast.error(error.message);
     }
   }

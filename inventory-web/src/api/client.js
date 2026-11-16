@@ -29,10 +29,14 @@ export async function request(path, { body, ...options } = {}) {
 
   if (!response.ok) {
     // The API returns plain strings (Conflict/NotFound) or ProblemDetails (validation).
+    // For validation problems, the specific messages live in `errors`.
+    const firstError = data?.errors && Object.values(data.errors).flat()[0];
     const message =
       typeof data === "string" && data
         ? data
-        : (data?.title ?? `Request failed (status ${response.status}).`);
+        : (firstError ??
+          data?.title ??
+          `Request failed (status ${response.status}).`);
     throw new Error(message);
   }
 

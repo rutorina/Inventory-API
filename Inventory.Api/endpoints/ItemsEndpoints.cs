@@ -49,10 +49,10 @@ public static class ItemsEndpoints
             async (CreateItemDto newItem, InventoryContext dbContext) =>
             {
                 Item item = new Item
-                {                    
-                    Name = newItem.Name,
-                    Sku = newItem.Sku,
-                    Description = newItem.Description ?? string.Empty,
+                {
+                    Name = newItem.Name.Trim(),
+                    Sku = newItem.Sku.Trim(),
+                    Description = newItem.Description?.Trim() ?? string.Empty,
                 };
                 dbContext.Items.Add(item);
                 try
@@ -61,7 +61,7 @@ public static class ItemsEndpoints
                 }
                 catch (DbUpdateException)
                 {
-                    return Results.Conflict($"An item with SKU '{newItem.Sku}' already exists.");
+                    return Results.Conflict($"An item with SKU '{item.Sku}' already exists.");
                 }
 
                 return Results.CreatedAtRoute(GetItemEndpointName, new { id = item.Id }, new ItemDto(item.Id, item.Name, item.Sku, item.Description));
@@ -80,9 +80,9 @@ public static class ItemsEndpoints
                     return Results.NotFound();
                 }
 
-                item.Name = updatedItem.Name;
-                item.Sku = updatedItem.Sku;
-                item.Description = updatedItem.Description ?? string.Empty;
+                item.Name = updatedItem.Name.Trim();
+                item.Sku = updatedItem.Sku.Trim();
+                item.Description = updatedItem.Description?.Trim() ?? string.Empty;
 
                 try
                 {
@@ -90,7 +90,7 @@ public static class ItemsEndpoints
                 }
                 catch (DbUpdateException)
                 {
-                    return Results.Conflict($"An item with SKU '{updatedItem.Sku}' already exists.");
+                    return Results.Conflict($"An item with SKU '{item.Sku}' already exists.");
                 }
 
                 return Results.Ok(new ItemDto(item.Id, item.Name, item.Sku, item.Description));

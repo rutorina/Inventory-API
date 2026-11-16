@@ -6,15 +6,15 @@ import deleteIcon from "../assets/delete.png";
 
 function ItemLine({ item, toggleEditMode }) {
   return (
-    <div key={item.id} className="item-line">
+    <Link
+      key={item.id}
+      className="item-line item-link"
+      to={`/items/${item.id}`}
+    >
       <h4 className="item-line-content">{item.name}</h4>
-      <h4 className="item-line-content">
-        <Link className="item-link" to={`/items/${item.id}`}>
-          {item.sku}
-        </Link>
-      </h4>
+      <h4 className="item-line-content">{item.sku}</h4>
       <h4 className="item-line-content">{item.description}</h4>
-    </div>
+    </Link>
   );
 }
 

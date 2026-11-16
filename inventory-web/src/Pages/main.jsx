@@ -4,6 +4,8 @@ import "../index.css";
 import App from "./App.jsx";
 import Items from "./Items.jsx";
 import ItemDetails from "./itemDetails.jsx";
+import Locations from "./Locations.jsx";
+
 import Toaster from "../components/Toaster.jsx";
 import { createBrowserRouter, RouterProvider } from "react-router";
 
@@ -25,12 +27,8 @@ const router = createBrowserRouter([
     element: <ItemDetails />,
   },
   {
-    path: "/items/:id/edit",
-    element: <div>Edit Item</div>,
-  },
-  {
     path: "/locations",
-    element: <div>Locations</div>,
+    element: <Locations />,
   },
   {
     path: "/locations/new",

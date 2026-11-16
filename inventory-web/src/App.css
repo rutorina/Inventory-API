@@ -25,7 +25,7 @@ textarea {
 
 :root {
   /* COLORS */
-  --link-color: #05857e;
+  --link-color: #0be9de;
   --border: #3a3333;
 }
 
@@ -68,7 +68,7 @@ textarea {
 
 .item-link {
   width: 100%;
-  display: block;
+  /* display: block; */
   text-decoration: underline;
   color: var(--link-color);
 }
