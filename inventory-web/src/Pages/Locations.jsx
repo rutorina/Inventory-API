@@ -5,16 +5,35 @@ import LocationLine from "../location-components/LocationLine.jsx";
 import { toast } from "react-hot-toast";
 import "../App.css";
 import { useEffect, useState } from "react";
-import { getLocations } from "../api/location.js";
+import { getLocations, createLocation } from "../api/location.js";
 
 export default function Locations() {
   const [locations, setLocations] = useState([]);
+  const [newLocation, setNewLocation] = useState({
+    name: "",
+    code: "",
+  });
 
   useEffect(() => {
     getLocations()
       .then(setLocations)
       .catch((error) => toast.error(error.message));
   }, []);
+
+  async function handleAddLocation() {
+    if(!newLocation.name.trim() || !newLocation.code.trim()) {
+      toast.error("Please fill in all fields.");
+      return;
+    }
+    try{ 
+      const createdLocation = await createLocation(newLocation);
+      toast.success("Location added successfully!");
+      setLocations((prevLocations) => [...prevLocations, createdLocation]);
+      setNewLocation({ name: "", code: "" });
+    } catch (error) {
+      toast.error(error.message);
+    }
+  }
 
   return (
     <>
@@ -25,8 +44,8 @@ export default function Locations() {
           <h3>Code</h3>
         </div>
         <div className="item-line">
-          <input placeholder="Enter new location name" />
-          <input placeholder="Enter new location code" />
+          <input placeholder="Enter new location name" value={newLocation.name} onChange={(e) => setNewLocation({...newLocation, name: e.target.value})} />
+          <input placeholder="Enter new location code" value={newLocation.code} onChange={(e) => setNewLocation({...newLocation, code: e.target.value})} />
         </div>
         {locations.map((location) => (
           <LocationLine key={location.id} location={location} />
@@ -34,9 +53,7 @@ export default function Locations() {
       </div>
       <div className="absolute right-[16px] top-[16px]">
         <ActionButton
-          onClick={() =>
-            toast("Add Location functionality not implemented yet.")
-          }
+          onClick={handleAddLocation}
           iconSrc={addIcon}
           altText="Add Location"
         />
