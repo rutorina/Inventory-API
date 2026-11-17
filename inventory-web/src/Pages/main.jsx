@@ -6,6 +6,7 @@ import Items from "./Items.jsx";
 import ItemDetails from "./itemDetails.jsx";
 import Locations from "./Locations.jsx";
 import LocationDetails from "./LocationDetails.jsx";
+import StockLevels from "./StockLevels.jsx";
 
 import Toaster from "../components/Toaster.jsx";
 import { createBrowserRouter, RouterProvider } from "react-router";
@@ -36,16 +37,16 @@ const router = createBrowserRouter([
     element: <LocationDetails />,
   },
   {
-    path: "/locations/:id/edit",
-    element: <div>Edit Location</div>,
-  },
-  {
     path: "/stock/receive",
     element: <div>Receive Stock</div>,
   },
   {
     path: "/stock/transfer",
     element: <div>Transfer Stock</div>,
+  },
+  {
+    path: "/stock/levels",
+    element: <StockLevels />,
   },
   {
     path: "*",
