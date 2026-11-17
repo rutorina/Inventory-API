@@ -90,7 +90,7 @@ public static class LocationsEndpoints
                     return Results.Conflict($"A location with code '{location.Code}' already exists.");
                 }
 
-                return Results.NoContent();
+                return Results.Ok(new LocationDto(location.Id, location.Name, location.Code));
             }
         );
 

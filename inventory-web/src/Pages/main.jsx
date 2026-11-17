@@ -5,6 +5,7 @@ import App from "./App.jsx";
 import Items from "./Items.jsx";
 import ItemDetails from "./itemDetails.jsx";
 import Locations from "./Locations.jsx";
+import LocationDetails from "./LocationDetails.jsx";
 
 import Toaster from "../components/Toaster.jsx";
 import { createBrowserRouter, RouterProvider } from "react-router";
@@ -31,12 +32,8 @@ const router = createBrowserRouter([
     element: <Locations />,
   },
   {
-    path: "/locations/new",
-    element: <div>New Location</div>,
-  },
-  {
     path: "/locations/:id",
-    element: <div>Location Details</div>,
+    element: <LocationDetails />,
   },
   {
     path: "/locations/:id/edit",
