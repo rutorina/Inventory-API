@@ -1,25 +1,38 @@
-import { useState, useEffect } from "react";
 import "../App.css";
-import { Toaster } from "react-hot-toast";
-import Modal from "../components/Modal.jsx";
+import PageLink from "../components/PageLink.jsx";
 
 function App() {
-  const [data, setData] = useState([]);
+  const pages = [
+    {
+      path: "/items",
+      title: "Items",
+    },
+    {
+      path: "/locations",
+      title: "Locations",
+    },
+    {
+      path: "/stock/receive",
+      title: "Receive Stock",
+    },
+    {
+      path: "/stock/transfer",
+      title: "Transfer Stock",
+    },
+    {
+      path: "/stock/levels",
+      title: "Stock Levels",
+    },
+  ];
 
-  const apiUrl = import.meta.env.VITE_API_URL;
-
-  const [open, setOpen] = useState(false);
-
-  useEffect(() => {
-    fetch(`${apiUrl}/api/items`)
-      .then((response) => response.json())
-      .then((data) => setData(data))
-      .catch((error) => console.error("Error fetching items:", error));
-  }, []);
-  // use Link from react-router for navigation
   return (
     <main>
-      <h1>Inventory Items</h1>
+      <h1 className="text-2xl font-bold mb-4">Inventory Items</h1>
+      <div className="flex flex-wrap justify-center gap-5 m-4">
+        {pages.map((page) => (
+          <PageLink key={page.path} path={page.path} title={page.title} />
+        ))}
+      </div>
     </main>
   );
 }
