@@ -3,7 +3,7 @@ import React from "react";
 export default function DetailField({ label, value, isEditing = false, setter }) {
   return (
     <div className="mb-4">
-      <label className="block text-gray-400 mb-1">{label}</label>
+      <label className="block text-gray-400 mb-3">{label}</label>
       {isEditing ? (
         <input
           type="text"

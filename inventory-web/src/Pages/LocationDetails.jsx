@@ -4,6 +4,7 @@ import {
   updateLocation,
   deleteLocation,
 } from "../api/location.js";
+import { getStockByLocation } from "../api/stockLevels.js";
 
 const FIELDS = [
   ["Name", "name"],
@@ -19,6 +20,12 @@ export default function LocationDetails() {
       update={updateLocation}
       remove={deleteLocation}
       backTo="/locations"
+      children={getStockByLocation}
+      childrenKeys={[
+        ["Item Name", "itemName"],
+        ["Quantity", "quantity"],
+      ]}
+      childrenTitle="Items at this Location"
     />
   );
 }

@@ -14,6 +14,7 @@ export default function StockLevels() {
       entityName="Stock Level"
       fields={FIELDS}
       load={getStockLevels}
+      backTo="/"
     />
   );
 }

@@ -1,5 +1,5 @@
 import toast from "react-hot-toast";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router";
 
 import "../App.css";
@@ -13,14 +13,19 @@ import deleteIcon from "../assets/delete.png";
 import checkIcon from "../assets/check.png";
 import cancelIcon from "../assets/cancel.png";
 
+import EntityList from "./EntityList.jsx";
+
 export default function EntityDetails({
-  entityName, 
+  entityName,
   fields,
   load,
-  update, 
-  remove, 
-  backTo, 
+  update,
+  remove,
+  backTo,
   children,
+  childrenKeys,
+  childrenTitle,
+  childrenEntityName = "Item",
 }) {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -42,6 +47,9 @@ export default function EntityDetails({
       .catch((error) => setLoadError(error.message));
   }, [id, load]);
 
+  // Stable function so EntityList's useEffect doesn't refetch on every render
+  const loadChildren = useCallback(() => children(id), [children, id]);
+
   const valueOf = (obj, key) => String(obj?.[key] ?? "");
 
   function handleSaveClick() {
@@ -49,7 +57,9 @@ export default function EntityDetails({
       toast("Please fill in all fields before saving.");
       return;
     }
-    if (fields.every(([, key]) => valueOf(entity, key) === valueOf(original, key))) {
+    if (
+      fields.every(([, key]) => valueOf(entity, key) === valueOf(original, key))
+    ) {
       setIsEditing(false);
       return;
     }
@@ -131,19 +141,42 @@ export default function EntityDetails({
       <div className="item-detail-actions">
         {isEditing ? (
           <>
-            <ActionButton iconSrc={checkIcon} altText="Save" onClick={handleSaveClick} />
-            <ActionButton iconSrc={cancelIcon} altText="Cancel" onClick={handleCancelClick} />
+            <ActionButton
+              iconSrc={checkIcon}
+              altText="Save"
+              onClick={handleSaveClick}
+            />
+            <ActionButton
+              iconSrc={cancelIcon}
+              altText="Cancel"
+              onClick={handleCancelClick}
+            />
           </>
         ) : (
           <>
-            <ActionButton iconSrc={editIcon} altText="Edit" onClick={() => setIsEditing(true)} />
-            <ActionButton iconSrc={deleteIcon} altText="Delete" onClick={() => setDeleteOpen(true)} />
+            <ActionButton
+              iconSrc={editIcon}
+              altText="Edit"
+              onClick={() => setIsEditing(true)}
+            />
+            <ActionButton
+              iconSrc={deleteIcon}
+              altText="Delete"
+              onClick={() => setDeleteOpen(true)}
+            />
           </>
         )}
       </div>
 
-      {children}
-
+      {children && (
+        <EntityList
+          title={childrenTitle ?? "Related"}
+          entityName={childrenEntityName}
+          fields={childrenKeys}
+          load={loadChildren}
+          hideWhenEmpty
+        />
+      )}
       <ReturnButton LinkTo={backTo} />
     </>
   );

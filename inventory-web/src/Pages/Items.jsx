@@ -17,6 +17,7 @@ export default function Items() {
       fields={FIELDS}
       load={getItems}
       create={createItem}
+      backTo="/"
       rowLink={itemLink}
     />
   );

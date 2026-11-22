@@ -20,7 +20,8 @@ export default function EntityList({
   load,
   create,
   rowLink,
-  backTo = "/",
+  backTo,
+  hideWhenEmpty = false,
 }) {
   const [rows, setRows] = useState([]);
   const [draft, setDraft] = useState(() => emptyFrom(fields));
@@ -53,6 +54,8 @@ export default function EntityList({
       </h4>
     ));
   }
+
+  if (hideWhenEmpty && rows.length === 0) return null;
 
   return (
     <>
@@ -104,7 +107,7 @@ export default function EntityList({
         </div>
       )}
 
-      <ReturnButton LinkTo={backTo} />
+      {backTo && <ReturnButton LinkTo={backTo} />}
     </>
   );
 }

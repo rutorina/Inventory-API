@@ -1,14 +1,8 @@
-@import "tailwindcss";
+/* Tailwind is loaded once in index.css. Custom rules live in layers
+   so Tailwind utility classes can override them. */
 
-/* RESETS */
-
-*,
-*:before,
-*:after {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+@layer base {
+/* RESETS (Tailwind's preflight already zeroes margin/padding and sets border-box) */
 
 button {
   border: none;
@@ -31,6 +25,9 @@ textarea {
   --border: #3a3333;
 }
 
+}
+
+@layer components {
 /* ITEMS LIST GRID */
 
 .item-grid {
@@ -137,4 +134,5 @@ textarea {
   width: 60%;
 
   text-align: left;
+}
 }

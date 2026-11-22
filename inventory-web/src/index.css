@@ -1,5 +1,6 @@
 @import "tailwindcss";
 
+@layer base {
 :root {
   --text: #6b6375;
   --text-h: #08060d;
@@ -97,8 +98,7 @@ p {
   margin: 0;
 }
 
-code,
-.counter {
+code {
   font-family: var(--mono);
   display: inline-flex;
   border-radius: 4px;
@@ -110,4 +110,5 @@ code {
   line-height: 135%;
   padding: 4px 8px;
   background: var(--code-bg);
+}
 }

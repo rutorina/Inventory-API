@@ -16,6 +16,7 @@ export default function Locations() {
       fields={FIELDS}
       load={getLocations}
       create={createLocation}
+      backTo="/"
       rowLink={locationLink}
     />
   );

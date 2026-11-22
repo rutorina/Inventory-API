@@ -27,7 +27,7 @@ function App() {
 
   return (
     <main>
-      <h1 className="text-2xl font-bold mb-4">Inventory Items</h1>
+      <h1 className="text-2xl font-bold mb-4">Routine Inventory Management</h1>
       <div className="flex flex-wrap justify-center gap-5 m-4">
         {pages.map((page) => (
           <PageLink key={page.path} path={page.path} title={page.title} />

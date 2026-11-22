@@ -1,5 +1,6 @@
 import EntityDetails from "../components/EntityDetails.jsx";
 import { getItem, updateItem, deleteItem } from "../api/items.js";
+import { getStockByItem } from "../api/stockLevels.js";
 
 const FIELDS = [
   ["Name", "name"],
@@ -16,6 +17,13 @@ export default function ItemDetails() {
       update={updateItem}
       remove={deleteItem}
       backTo="/items"
+      children={getStockByItem}
+      childrenKeys={[
+        ["Location Name", "locationName"],
+        ["Quantity", "quantity"],
+      ]}
+      childrenTitle="Locations for this Item"
+      childrenEntityName="Location"
     />
   );
 }
