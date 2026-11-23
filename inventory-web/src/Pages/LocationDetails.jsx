@@ -3,7 +3,7 @@ import {
   getLocation,
   updateLocation,
   deleteLocation,
-} from "../api/location.js";
+} from "../api/locations.js";
 import { getStockByLocation } from "../api/stockLevels.js";
 
 const FIELDS = [

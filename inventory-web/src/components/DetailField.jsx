@@ -1,19 +1,25 @@
-import React from "react";
+import { fieldClass, labelClass } from "../styles.js";
 
-export default function DetailField({ label, value, isEditing = false, setter }) {
+export default function DetailField({
+  label,
+  value,
+  isEditing = false,
+  setter,
+}) {
   return (
-    <div className="mb-4">
-      <label className="block text-gray-400 mb-3">{label}</label>
+    <div className="px-6 py-5">
+      <label className={labelClass}>{label}</label>
       {isEditing ? (
         <input
           type="text"
-          className="item-detail-edit"
+          className={fieldClass}
           value={value}
           onChange={(e) => setter(e.target.value)}
-          readOnly={!isEditing}
         />
       ) : (
-        <p className="text-white">{value}</p>
+        <p className="min-h-[1.75rem] text-xl text-white">
+          {value || <span className="text-gray-500">—</span>}
+        </p>
       )}
     </div>
   );

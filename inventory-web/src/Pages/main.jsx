@@ -7,6 +7,8 @@ import ItemDetails from "./itemDetails.jsx";
 import Locations from "./Locations.jsx";
 import LocationDetails from "./LocationDetails.jsx";
 import StockLevels from "./StockLevels.jsx";
+import TransferStock from "./TransferStock.jsx";
+import ReceiveStock from "./ReceiveStock.jsx";
 
 import Toaster from "../components/Toaster.jsx";
 import { createBrowserRouter, RouterProvider } from "react-router";
@@ -34,11 +36,11 @@ const router = createBrowserRouter([
   },
   {
     path: "/stock/receive",
-    element: <div>Receive Stock</div>,
+    element: <ReceiveStock />,
   },
   {
     path: "/stock/transfer",
-    element: <div>Transfer Stock</div>,
+    element: <TransferStock />,
   },
   {
     path: "/stock/levels",

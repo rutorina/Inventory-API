@@ -1,5 +1,5 @@
 import EntityList from "../components/EntityList.jsx";
-import { getLocations, createLocation } from "../api/location.js";
+import { getLocations, createLocation } from "../api/locations.js";
 
 const FIELDS = [
   ["Name", "name"],

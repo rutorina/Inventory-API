@@ -2,10 +2,10 @@ import toast from "react-hot-toast";
 import { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router";
 
-import "../App.css";
 import DetailField from "./DetailField.jsx";
 import Modal from "./Modal.jsx";
-import ReturnButton from "./ReturnButton.jsx";
+import PageHeader from "./PageHeader.jsx";
+import { cardClass } from "../styles.js";
 import ActionButton from "./ActionButton.jsx";
 
 import editIcon from "../assets/edit.png";
@@ -96,14 +96,39 @@ export default function EntityDetails({
   if (loadError) {
     return (
       <>
-        <div className="item-detail-header">
-          <h1>{entityName} not found</h1>
-        </div>
-        <p className="text-center">{loadError}</p>
-        <ReturnButton LinkTo={backTo} />
+        <PageHeader title={`${entityName} not found`} backTo={backTo} />
+        <p className="text-center text-gray-400">{loadError}</p>
       </>
     );
   }
+
+  const actions = isEditing ? (
+    <>
+      <ActionButton
+        iconSrc={checkIcon}
+        altText="Save"
+        onClick={handleSaveClick}
+      />
+      <ActionButton
+        iconSrc={cancelIcon}
+        altText="Cancel"
+        onClick={handleCancelClick}
+      />
+    </>
+  ) : (
+    <>
+      <ActionButton
+        iconSrc={editIcon}
+        altText="Edit"
+        onClick={() => setIsEditing(true)}
+      />
+      <ActionButton
+        iconSrc={deleteIcon}
+        altText="Delete"
+        onClick={() => setDeleteOpen(true)}
+      />
+    </>
+  );
 
   return (
     <>
@@ -125,59 +150,40 @@ export default function EntityDetails({
         focus="cancel"
       />
 
-      <div className="item-detail-header">
-        <h1>{isEditing ? `Edit ${entityName}` : `${entityName} Details`}</h1>
-      </div>
-      {fields.map(([label, key]) => (
-        <div className="item-detail" key={key}>
+      <PageHeader
+        title={isEditing ? `Edit ${entityName}` : `${entityName} Details`}
+        backTo={backTo}
+        actions={actions}
+      />
+
+      <div
+        className={`${cardClass} mx-auto max-w-2xl divide-y divide-(--border) text-left transition ${
+          isEditing ? "border-(--accent-border)" : ""
+        }`}
+      >
+        {fields.map(([label, key]) => (
           <DetailField
+            key={key}
             label={label}
             value={valueOf(entity, key)}
             isEditing={isEditing}
             setter={(val) => setEntity({ ...entity, [key]: val })}
           />
-        </div>
-      ))}
-      <div className="item-detail-actions">
-        {isEditing ? (
-          <>
-            <ActionButton
-              iconSrc={checkIcon}
-              altText="Save"
-              onClick={handleSaveClick}
-            />
-            <ActionButton
-              iconSrc={cancelIcon}
-              altText="Cancel"
-              onClick={handleCancelClick}
-            />
-          </>
-        ) : (
-          <>
-            <ActionButton
-              iconSrc={editIcon}
-              altText="Edit"
-              onClick={() => setIsEditing(true)}
-            />
-            <ActionButton
-              iconSrc={deleteIcon}
-              altText="Delete"
-              onClick={() => setDeleteOpen(true)}
-            />
-          </>
-        )}
+        ))}
       </div>
 
       {children && (
-        <EntityList
-          title={childrenTitle ?? "Related"}
-          entityName={childrenEntityName}
-          fields={childrenKeys}
-          load={loadChildren}
-          hideWhenEmpty
-        />
+        <div className="mx-auto max-w-2xl">
+          <EntityList
+            title={childrenTitle ?? "Related"}
+            entityName={childrenEntityName}
+            fields={childrenKeys}
+            load={loadChildren}
+            hideWhenEmpty
+            nested
+          />
+        </div>
       )}
-      <ReturnButton LinkTo={backTo} />
     </>
   );
 }

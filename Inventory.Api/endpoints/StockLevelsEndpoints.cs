@@ -21,6 +21,8 @@ public static class StockLevelsEndpoints
                     .Include(sl => sl.Location)
                     .Select(sl => new StockLevelSummaryDto(
                         sl.Id,
+                        sl.ItemId,
+                        sl.LocationId,
                         sl.Item.Name,
                         sl.Location.Name,
                         sl.Quantity
@@ -44,6 +46,8 @@ public static class StockLevelsEndpoints
                         ? Results.Ok(
                             new StockLevelSummaryDto(
                                 stockLevel.Id,
+                                stockLevel.ItemId,
+                                stockLevel.LocationId,
                                 stockLevel.Item.Name,
                                 stockLevel.Location.Name,
                                 stockLevel.Quantity
@@ -66,6 +70,8 @@ public static class StockLevelsEndpoints
                     .Where(sl => sl.ItemId == itemId)
                     .Select(sl => new StockLevelSummaryDto(
                         sl.Id,
+                        sl.ItemId,
+                        sl.LocationId,
                         sl.Item.Name,
                         sl.Location.Name,
                         sl.Quantity
@@ -89,6 +95,8 @@ public static class StockLevelsEndpoints
                     .Where(sl => sl.LocationId == locationId)
                     .Select(sl => new StockLevelSummaryDto(
                         sl.Id,
+                        sl.ItemId,
+                        sl.LocationId,
                         sl.Item.Name,
                         sl.Location.Name,
                         sl.Quantity

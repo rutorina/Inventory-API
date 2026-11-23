@@ -1,5 +1,4 @@
 import { useEffect } from "react";
-import "./modal.css";
 
 export default function ModalWindow({ open, onClose, children }) {
   useEffect(() => {
@@ -13,11 +12,11 @@ export default function ModalWindow({ open, onClose, children }) {
     // backdrop
     <div
       onClick={onClose}
-      className={`fixed inset-0 z-50 flex justify-center items-center transition-colors ${open ? "visible bg-black/50" : "invisible"}`}
+      className={`fixed inset-0 z-50 flex justify-center items-center transition-colors ${open ? "visible bg-black/60 backdrop-blur-sm" : "invisible"}`}
     >
       {/* Modal */}
       <div
-        className={`relative w-full max-w-md mx-4! bg-gray-700 text-gray-100 rounded-xl shadow-xl p-6! transition-[scale,opacity] ${open ? "scale-100 opacity-100" : "scale-125 opacity-0"}`}
+        className={`relative w-full max-w-md mx-4 rounded-2xl border border-(--border) bg-(--bg) p-8 text-center text-gray-100 shadow-2xl transition-[scale,opacity] ${open ? "scale-100 opacity-100" : "scale-125 opacity-0"}`}
         onClick={(e) => e.stopPropagation()}
       >
         <button

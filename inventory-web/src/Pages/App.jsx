@@ -1,36 +1,47 @@
-import "../App.css";
 import PageLink from "../components/PageLink.jsx";
 
-function App() {
-  const pages = [
-    {
-      path: "/items",
-      title: "Items",
-    },
-    {
-      path: "/locations",
-      title: "Locations",
-    },
-    {
-      path: "/stock/receive",
-      title: "Receive Stock",
-    },
-    {
-      path: "/stock/transfer",
-      title: "Transfer Stock",
-    },
-    {
-      path: "/stock/levels",
-      title: "Stock Levels",
-    },
-  ];
+const pages = [
+  {
+    path: "/items",
+    title: "Items",
+    description: "Browse, add and edit the items you keep in stock.",
+  },
+  {
+    path: "/locations",
+    title: "Locations",
+    description: "Warehouses, shelves and anywhere else stock lives.",
+  },
+  {
+    path: "/stock/receive",
+    title: "Receive Stock",
+    description: "Book incoming stock into a location.",
+  },
+  {
+    path: "/stock/transfer",
+    title: "Transfer Stock",
+    description: "Move stock from one location to another.",
+  },
+  {
+    path: "/stock/levels",
+    title: "Stock Levels",
+    description: "See how much of every item is where.",
+  },
+];
 
+function App() {
   return (
     <main>
-      <h1 className="text-2xl font-bold mb-4">Routine Inventory Management</h1>
-      <div className="flex flex-wrap justify-center gap-5 m-4">
+      <header className="py-12 text-center">
+        <h1 className="m-0 text-4xl font-bold tracking-tight sm:text-6xl">
+          Rut<span className="text-(--accent)">Inventory</span>
+        </h1>
+        <p className="mt-3 text-lg text-gray-400">
+          Keep track of what you have and where it is.
+        </p>
+      </header>
+      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {pages.map((page) => (
-          <PageLink key={page.path} path={page.path} title={page.title} />
+          <PageLink key={page.path} {...page} />
         ))}
       </div>
     </main>

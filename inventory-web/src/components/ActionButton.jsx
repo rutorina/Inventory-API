@@ -1,7 +1,14 @@
+import { iconButtonClass, iconImageClass } from "../styles.js";
+
 export default function ActionButton({ onClick, iconSrc, altText }) {
   return (
-    <div className="item-detail-action" onClick={onClick}>
-      <img className="item-detail-action-icon" src={iconSrc} alt={altText} />
-    </div>
+    <button
+      type="button"
+      className={iconButtonClass}
+      onClick={onClick}
+      title={altText}
+    >
+      <img className={iconImageClass} src={iconSrc} alt={altText} />
+    </button>
   );
 }
