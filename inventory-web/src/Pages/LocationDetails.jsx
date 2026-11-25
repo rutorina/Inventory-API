@@ -20,12 +20,12 @@ export default function LocationDetails() {
       update={updateLocation}
       remove={deleteLocation}
       backTo="/locations"
-      children={getStockByLocation}
-      childrenKeys={[
+      loadRelated={getStockByLocation}
+      relatedFields={[
         ["Item Name", "itemName"],
         ["Quantity", "quantity"],
       ]}
-      childrenTitle="Items at this Location"
+      relatedTitle="Items at this Location"
     />
   );
 }

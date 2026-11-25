@@ -3,10 +3,11 @@ import { createRoot } from "react-dom/client";
 import "../index.css";
 import App from "./App.jsx";
 import Items from "./Items.jsx";
-import ItemDetails from "./itemDetails.jsx";
+import ItemDetails from "./ItemDetails.jsx";
 import Locations from "./Locations.jsx";
 import LocationDetails from "./LocationDetails.jsx";
 import StockLevels from "./StockLevels.jsx";
+import NotFound from "./NotFound.jsx";
 import TransferStock from "./TransferStock.jsx";
 import ReceiveStock from "./ReceiveStock.jsx";
 
@@ -48,7 +49,7 @@ const router = createBrowserRouter([
   },
   {
     path: "*",
-    element: <div>Page Not Found</div>,
+    element: <NotFound />,
   },
 ]);
 

@@ -6,7 +6,7 @@ export default function PageHeader({ title, backTo, actions }) {
     <header className="relative flex min-h-24 items-center justify-center py-6">
       {backTo && (
         <div className="absolute left-0">
-          <ReturnButton LinkTo={backTo} />
+          <ReturnButton to={backTo} />
         </div>
       )}
       <h1 className="m-0 px-28 text-center text-3xl font-semibold tracking-tight sm:text-5xl">

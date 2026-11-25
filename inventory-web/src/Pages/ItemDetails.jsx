@@ -17,13 +17,13 @@ export default function ItemDetails() {
       update={updateItem}
       remove={deleteItem}
       backTo="/items"
-      children={getStockByItem}
-      childrenKeys={[
+      loadRelated={getStockByItem}
+      relatedFields={[
         ["Location Name", "locationName"],
         ["Quantity", "quantity"],
       ]}
-      childrenTitle="Locations for this Item"
-      childrenEntityName="Location"
+      relatedTitle="Locations for this Item"
+      relatedEntityName="Location"
     />
   );
 }

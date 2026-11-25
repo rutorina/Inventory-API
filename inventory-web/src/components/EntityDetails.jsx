@@ -6,6 +6,7 @@ import DetailField from "./DetailField.jsx";
 import Modal from "./Modal.jsx";
 import PageHeader from "./PageHeader.jsx";
 import LoadError from "./LoadError.jsx";
+import NotFound from "../Pages/NotFound.jsx";
 import { cardClass, labelClass, skeletonClass } from "../styles.js";
 import ActionButton from "./ActionButton.jsx";
 
@@ -23,10 +24,10 @@ export default function EntityDetails({
   update,
   remove,
   backTo,
-  children,
-  childrenKeys,
-  childrenTitle,
-  childrenEntityName = "Item",
+  loadRelated,
+  relatedFields,
+  relatedTitle = "Related",
+  relatedEntityName = "Item",
 }) {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -40,7 +41,7 @@ export default function EntityDetails({
   const [deleteOpen, setDeleteOpen] = useState(false);
 
   useEffect(() => {
-    let ignore = false; 
+    let ignore = false;
     load(id)
       .then((data) => {
         if (ignore) return;
@@ -50,7 +51,7 @@ export default function EntityDetails({
         setLoaded({ id, attempt, error: null });
       })
       .catch((error) => {
-        if (!ignore) setLoaded({ id, attempt, error: error.message });
+        if (!ignore) setLoaded({ id, attempt, error });
       });
     return () => {
       ignore = true;
@@ -60,7 +61,10 @@ export default function EntityDetails({
   const loading = loaded.id !== id || loaded.attempt !== attempt;
   const loadError = loading ? null : loaded.error;
 
-  const loadChildren = useCallback(() => children(id), [children, id]);
+  const loadRelatedForId = useCallback(
+    () => loadRelated(id),
+    [loadRelated, id],
+  );
 
   const valueOf = (obj, key) => String(obj?.[key] ?? "");
 
@@ -105,13 +109,25 @@ export default function EntityDetails({
     }
   }
 
+  if (loadError?.status === 404) {
+    const name = entityName.toLowerCase();
+    return (
+      <NotFound
+        title={`${entityName} not found`}
+        message={`There is no ${name} with id ${id}. It may have been deleted.`}
+        backTo={backTo}
+        backLabel={`All ${name}s`}
+      />
+    );
+  }
+
   if (loadError) {
     return (
       <>
         <PageHeader title={`${entityName} Details`} backTo={backTo} />
         <LoadError
           title={`Couldn't load this ${entityName.toLowerCase()}`}
-          message={loadError}
+          message={loadError.message}
           onRetry={() => setAttempt((a) => a + 1)}
         />
       </>
@@ -207,13 +223,13 @@ export default function EntityDetails({
         ))}
       </div>
 
-      {children && (
+      {loadRelated && (
         <div className="mx-auto max-w-2xl">
           <EntityList
-            title={childrenTitle ?? "Related"}
-            entityName={childrenEntityName}
-            fields={childrenKeys}
-            load={loadChildren}
+            title={relatedTitle}
+            entityName={relatedEntityName}
+            fields={relatedFields}
+            load={loadRelatedForId}
             hideWhenEmpty
             nested
           />

@@ -1,7 +1,6 @@
 import toast from "react-hot-toast";
-import { useState, useEffect } from "react";
-import { getLocations } from "../api/locations";
-import { getItems } from "../api/items";
+import { useState } from "react";
+import useItemsAndLocations from "../hooks/useItemsAndLocations.js";
 import { receiveStock } from "../api/stockLevels.js";
 import PageHeader from "../components/PageHeader.jsx";
 import {
@@ -15,27 +14,14 @@ import {
 } from "../components/StockForm.jsx";
 
 export default function ReceiveStock() {
-  const [itemId, setItemId] = useState("");
-  const [locationId, setLocationId] = useState("");
+  const { items, locations } = useItemsAndLocations();
+  const [chosenItemId, setItemId] = useState("");
+  const [chosenLocationId, setLocationId] = useState("");
   const [quantity, setQuantity] = useState(1);
-  const [items, setItems] = useState([]);
-  const [locations, setLocations] = useState([]);
   const [submitting, setSubmitting] = useState(false);
 
-  useEffect(() => {
-    getItems()
-      .then((data) => {
-        setItems(data);
-        if (data.length > 0) setItemId(data[0].id);
-      })
-      .catch((error) => toast.error(error.message));
-    getLocations()
-      .then((data) => {
-        setLocations(data);
-        if (data.length > 0) setLocationId(data[0].id);
-      })
-      .catch((error) => toast.error(error.message));
-  }, []);
+  const itemId = chosenItemId || (items[0]?.id ?? "");
+  const locationId = chosenLocationId || (locations[0]?.id ?? "");
 
   const selectedItem = items.find((itm) => itm.id === itemId);
   const selectedLocation = locations.find((loc) => loc.id === locationId);

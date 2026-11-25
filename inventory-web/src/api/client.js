@@ -37,7 +37,9 @@ export async function request(path, { body, ...options } = {}) {
         : (firstError ??
           data?.title ??
           `Request failed (status ${response.status}).`);
-    throw new Error(message);
+    const error = new Error(message);
+    error.status = response.status;
+    throw error;
   }
 
   return data;
