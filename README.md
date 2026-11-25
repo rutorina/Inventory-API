@@ -146,5 +146,9 @@ The stock level `GET` routes return:
 ## Deployment notes
 
 - The frontend is a single-page app. [`inventory-web/vercel.json`](inventory-web/vercel.json) sends every path to `index.html`, so direct links like `/items/3` work on Vercel.
-- CORS on the API only allows `http://localhost:5173`, which is set in `Program.cs`. Add your deployed frontend's URL there before you deploy.
-- Set `VITE_API_URL` in your hosting provider's environment variables to point at the deployed API.
+- The API is deployed as a Docker image. The [`Dockerfile`](Dockerfile) at the repo root builds it, and it listens on `$PORT` (default `8080`).
+- Set these environment variables on the API host, for example Render:
+  - `ConnectionStrings__DbConnection`: the Postgres connection string
+  - `FrontendOrigins`: the frontend URLs allowed by CORS, comma-separated, with no trailing slash. For example, `https://your-app.vercel.app`.
+- In development, `FrontendOrigins` comes from `appsettings.Development.json` (`http://localhost:5173`).
+- Set `VITE_API_URL` in the frontend host's environment variables (for example Vercel) to point at the deployed API.

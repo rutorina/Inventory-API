@@ -1,0 +1,20 @@
+# Only Inventory.Api/ is needed to build the image
+inventory-web/
+node_modules/
+.git/
+.vscode/
+.vs/
+.idea/
+
+**/bin/
+**/obj/
+
+# Never bake secrets or local databases into the image
+**/.env
+**/*.db
+**/*.db-shm
+**/*.db-wal
+
+*.md
+Dockerfile
+.dockerignore
