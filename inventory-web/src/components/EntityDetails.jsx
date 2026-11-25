@@ -5,7 +5,8 @@ import { useParams, useNavigate } from "react-router";
 import DetailField from "./DetailField.jsx";
 import Modal from "./Modal.jsx";
 import PageHeader from "./PageHeader.jsx";
-import { cardClass } from "../styles.js";
+import LoadError from "./LoadError.jsx";
+import { cardClass, labelClass, skeletonClass } from "../styles.js";
 import ActionButton from "./ActionButton.jsx";
 
 import editIcon from "../assets/edit.png";
@@ -32,22 +33,33 @@ export default function EntityDetails({
 
   const [entity, setEntity] = useState(null);
   const [original, setOriginal] = useState(null);
-  const [loadError, setLoadError] = useState(null);
+  const [attempt, setAttempt] = useState(0);
+  const [loaded, setLoaded] = useState({ id: null, attempt: -1, error: null });
   const [isEditing, setIsEditing] = useState(false);
   const [saveOpen, setSaveOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
 
   useEffect(() => {
-    setLoadError(null);
+    let ignore = false; 
     load(id)
       .then((data) => {
+        if (ignore) return;
         setEntity(data);
         setOriginal(data);
+        setIsEditing(false);
+        setLoaded({ id, attempt, error: null });
       })
-      .catch((error) => setLoadError(error.message));
-  }, [id, load]);
+      .catch((error) => {
+        if (!ignore) setLoaded({ id, attempt, error: error.message });
+      });
+    return () => {
+      ignore = true;
+    };
+  }, [id, load, attempt]);
 
-  // Stable function so EntityList's useEffect doesn't refetch on every render
+  const loading = loaded.id !== id || loaded.attempt !== attempt;
+  const loadError = loading ? null : loaded.error;
+
   const loadChildren = useCallback(() => children(id), [children, id]);
 
   const valueOf = (obj, key) => String(obj?.[key] ?? "");
@@ -96,8 +108,31 @@ export default function EntityDetails({
   if (loadError) {
     return (
       <>
-        <PageHeader title={`${entityName} not found`} backTo={backTo} />
-        <p className="text-center text-gray-400">{loadError}</p>
+        <PageHeader title={`${entityName} Details`} backTo={backTo} />
+        <LoadError
+          title={`Couldn't load this ${entityName.toLowerCase()}`}
+          message={loadError}
+          onRetry={() => setAttempt((a) => a + 1)}
+        />
+      </>
+    );
+  }
+
+  if (loading) {
+    return (
+      <>
+        <PageHeader title={`${entityName} Details`} backTo={backTo} />
+        <div
+          aria-busy="true"
+          className={`${cardClass} mx-auto max-w-2xl divide-y divide-(--border) text-left`}
+        >
+          {fields.map(([label, key]) => (
+            <div className="px-6 py-5" key={key}>
+              <span className={labelClass}>{label}</span>
+              <span className={`${skeletonClass} block h-7 w-2/3`} />
+            </div>
+          ))}
+        </div>
       </>
     );
   }

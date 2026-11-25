@@ -1,5 +1,3 @@
-// Shared Tailwind class strings, so every page looks the same.
-
 export const cardClass =
   "rounded-2xl border border-(--border) bg-(--surface) shadow-(--shadow)";
 
@@ -10,6 +8,8 @@ export const fieldClass =
   "w-full rounded-lg border border-(--border) bg-white/5 px-4 py-3 text-lg text-white " +
   "placeholder:text-gray-500 outline-none transition " +
   "focus:border-(--accent) focus:ring-2 focus:ring-(--accent-bg)";
+
+export const skeletonClass = "animate-pulse rounded-md bg-white/10";
 
 export const iconButtonClass =
   "group flex size-10 items-center justify-center rounded-full transition hover:bg-(--accent-bg)";
